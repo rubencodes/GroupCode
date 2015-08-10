@@ -93,6 +93,9 @@ Template.nav.events({
 		Session.set("videoOngoing", false);
 		Session.set("videoShown", true);
 		Router.go("/");
+	},
+	'click #share' : function() {
+		location.href='mailto:?subject=Join My GroupCode!&body=Hello,%0D%0A%0D%0ACome help me code on GroupCode, the free, real-time, collaborative code-editor! Follow the link below to join me.%0D%0A%0D%0A%0D%0A%0D%0AThanks!';
 	}
 });
 
