@@ -1,0 +1,140 @@
+<head>
+  <title>GroupCodes</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" href="GroupCode2.png"/>
+  <script src="http://simplewebrtc.com/latest.js"></script> 
+</head>
+
+<body class="box">
+	{{> nav}}
+
+	{{>Router}}
+</body>
+
+<template name="landing">
+	<div class="container">
+		<br><br>
+		<div class="row">
+			<h1>Welcome to GroupCodes<br><small>Free, collaborative code-editing rooms</small></h1>
+		</div><br><br>
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<button id="create" class="btn btn-success btn-block"><h3>Start a GroupCode</h3></button>
+			</div>
+		</div><br>
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<div id="drop_zone" class="file-upload-box btn-success">
+					<h3 class="help-text">Start with File<br><small>Drag & Drop or Click to Upload</small></h3>
+					<input type="file" id="files" name="files[]" />
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="nav">
+	<nav class="navbar navbar-inverse" style="z-index: 10;">
+	  <div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		  <a class="navbar-brand"><img id="navbar-img" src="GroupCode.png"><b>{{name}}</b></a>
+		</div>
+		{{#if showVideoButtons}}
+		  <ul class="nav navbar-nav navbar-right">
+			  <li><button id="download" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-save"></span></button></li>
+			  <li>
+			  	<select class="navbar-btn">
+					<option value="actionscript" 	ext="as">ActionScript</option>  
+					<option value="batchfile" 	ext="bat">Batchfile</option>  
+					<option value="c_cpp" 		ext="c">C</option>  
+					<option value="c_cpp" 		ext="cpp">C++</option>  
+					<option value="csharp" 		ext="cs">C#</option>  
+					<option value="coffee" 		ext="coffee">CoffeeScript</option>  
+					<option value="css" 		ext="css">CSS</option>  
+					<option value="cobol" 		ext="cbl">Cobol</option>  
+					<option value="d" 			ext="d">D</option>  
+					<option value="dart" 		ext="dart">Dart</option>  
+					<option value="django" 		ext="py">Django</option>  
+					<option value="erlang" 		ext="erl">Erlang</option>  
+					<option value="haml" 		ext="haml">HAML</option>  
+					<option value="haskell" 	ext="hs">Haskell</option>  
+					<option value="html" 		ext="html">HTML</option>  
+					<option value="html_ruby" 	ext="erb">HTML/Ruby</option>  
+					<option value="java" 		ext="java">Java</option>  
+					<option value="json" 		ext="json">JSON</option>  
+					<option value="javascript" 	ext="js" selected>Javascript</option>  
+					<option value="markdown" 	ext="md">Markdown</option>  
+					<option value="mysql" 		ext="sql">MySQL</option>  
+					<option value="latex" 		ext="tex">LaTeX</option>  
+					<option value="matlab" 		ext="mat">MatLab</option>  
+					<option value="objectivec" 	ext="m">Objective-C</option>  
+					<option value="pascal" 		ext="pas">Pascal</option>  
+					<option value="perl" 		ext="pl">Perl</option>  
+					<option value="php" 		ext="php">PHP</option>  
+					<option value="prolog" 		ext="pl">Prolog</option>  
+					<option value="python" 		ext="py">Python</option>  
+					<option value="r" 			ext="r">R</option>  
+					<option value="ruby"		ext="rb">Ruby</option>  
+					<option value="sass"		ext="scss">SASS</option>  
+					<option value="scala" 		ext="scala">Scala</option>  
+					<option value="scheme" 		ext="scm">Scheme</option>  
+					<option value="sh" 			ext="sh">SH</option>  
+					<option value="sql" 		ext="sql">SQL</option>  
+					<option value="svg" 		ext="svg">SVG</option>  
+					<option value="text" 		ext="txt">Text</option>  
+					<option value="vbscript" 	ext="vbs">VBScript</option>  
+					<option value="yaml" 		ext="yaml">YAML</option>  
+			  	</select>
+			  </li>
+			  {{#if videoOngoing}}
+				  {{#if videoShown}}
+					<li><button id="hideVideoCall" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-chevron-up"></span></button></li>
+					<li><button id="stopVideoCall" class="btn btn-danger navbar-btn"><span class="glyphicon glyphicon-stop"></span></button></li>
+				  {{else}}
+					<li><button id="showVideoCall" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-chevron-down"></span></button></li>
+					<li><button id="stopVideoCall" class="btn btn-danger navbar-btn"><span class="glyphicon glyphicon-stop"></span></button></li>
+				  {{/if}}
+			  {{else}}
+				  <li><button id="startVideoCall" class="btn btn-danger navbar-btn"><span class="glyphicon glyphicon-facetime-video"></span></button></li>
+			  {{/if}}
+		  </ul>
+		{{/if}}
+	  </div><!-- /.container-fluid -->
+	</nav>
+</template>
+
+<template name="loading">
+	<div class="centered">
+		<div class="large progress"></div>
+	</div>
+</template>
+<template name="codeBox">
+    {{> videoChat}}
+	{{#if Template.subscriptionsReady}}
+		{{> sharejsAce docid=docid onRender=config onConnect=fileUploaded id="codeBox"}}
+	{{/if}}
+</template>
+
+<template name="videoChat">
+	<div class="videoChatWrapper">
+		<div id="remotesVideos"></div>
+		<video height="300" width="300" id="localVideo"></video>
+		<button id="audioControl" class="btn btn-success navbar-btn">
+			<span class="glyphicon glyphicon-volume-up"></span>
+		</button>
+		<button id="videoControl" class="btn btn-success navbar-btn">
+			<span class="glyphicon glyphicon-eye-open"></span>
+		</button>
+		<button id="sizeControl" class="btn btn-success navbar-btn">
+			<span class="glyphicon glyphicon-resize-full"></span>
+		</button>
+	</div>
+</template>
+

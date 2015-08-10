@@ -1,0 +1,230 @@
+/* CSS declarations go here */
+html,body {
+    background: #333;
+	height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+}
+body {
+	background: url(https://static.pexels.com/photos/7112/woman-typing-writing-windows.jpg);
+    background-size: cover;
+    background-position: center center;
+}
+.box {
+  display: flex;
+  flex-flow: column;
+}
+.navbar-inverse {
+   	margin-bottom: 0px;
+    flex: 0 1 60px;
+    border-radius: 0;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-color: rgba(0,0,0,0.2);
+    color: #fff;
+    background: rgba(0,0,0,0.4);
+}
+a.navbar-brand {
+	color: #fff !important;
+	font-size: 32px;
+	font-family: monospace;
+    text-shadow: 1px 1px rgba(0,0,0,0.4);
+}
+.navbar-btn,.selectric-wrapper {
+	margin-right: 15px;
+}
+.selectric-wrapper {
+	margin-top: 8px;
+}
+#codeBox {
+	position: relative;
+	top: 0;
+	left: 0;
+	font-family: monospace;
+	font-size: 18px;
+	resize: none;
+	flex: 1 1 auto;
+}
+
+.videoContainer>video {
+	width: 300px;
+	height: 300px;
+	background: #000;
+}
+
+video#localVideo {
+	background: #000;
+    z-index: 100000;
+    width: 100px;
+    height: 100px;
+	position: absolute;
+    top: 190px;
+    right: 10px;
+}
+
+#remotesVideos {
+    background: url("NoUser.png");
+	background-size: cover;
+	width: 300px;
+    height: 300px;
+}
+
+.videoChatWrapper {
+	display: none;
+	position: fixed;
+    z-index: 5;
+	background: #000;
+    width: 300px;
+    height: 300px;
+    right: 0;
+	top: 60px;
+}
+.videoChatWrapper.fullscreen {
+	width: 100%;
+    height: 100%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.videoChatWrapper.fullscreen>#remotesVideos,.videoChatWrapper.fullscreen>#remotesVideos>.videoContainer,.videoChatWrapper.fullscreen>#remotesVideos>.videoContainer>video {
+	width: 100%;
+	height: 100%;
+	background: #000;
+}
+.videoChatWrapper.fullscreen>#localVideo {
+	top: 0px;
+}
+.videoChatWrapper.fullscreen>button {
+    position: absolute;
+    bottom: 70px;
+    left: 10px;
+    display: none;
+    opacity: 0;
+}
+.videoChatWrapper.fullscreen>button {
+    position: absolute;
+    bottom: 70px;
+    left: 10px;
+    display: none;
+    opacity: 0;
+}
+.videoChatWrapper.fullscreen>button:nth-of-type(2) {
+	left: 60px;
+}
+.videoChatWrapper.fullscreen>button:nth-of-type(3) {
+	left: 110px;
+}
+
+.videoChatWrapper>button {
+    position: relative;
+    margin: 0;
+    bottom: 53px;
+    left: 10px;
+	display: none;
+	opacity: 0;
+}
+
+.videoChatWrapper:hover>button {
+	display: inline-block;
+	animation: fadeIn 0.4s ease-in-out 0s;
+  	animation-fill-mode: forwards; 
+}
+
+@keyframes fadeIn {
+    from {
+		opacity: 0;
+	}
+    to {
+		opacity: 1;
+	}
+}
+
+.file-upload-box {
+	text-align: center;
+	padding: 20px;
+	width: 100%;
+	height: auto;
+	border-color: #fff;
+	border-style: dashed;
+	border-width: 1px;
+	cursor: pointer;
+}
+#files {
+	margin: 0 auto;
+	display: none;
+}
+h3 {
+	margin-top: 21px;
+    margin-bottom: 21px;
+    line-height: 32px;
+}
+
+h1 {
+	font-family: monospace;
+	font-weight: bold;
+	color: #fff;
+	text-align: center;
+}
+
+h1>small {
+	font-family: "Helvetica", sans-serif;
+	color: #fff;
+}
+h3.help-text>small {
+	color: #fff;
+}
+
+#navbar-img {
+	height: 100%;
+	display: inline-block;
+	margin-top: -5px;
+    padding-right: 10px;
+}
+
+.btn-success:active:hover, .btn-success.active:hover, .open > .dropdown-toggle.btn-success:hover, .btn-success:active:focus, .btn-success.active:focus, .open > .dropdown-toggle.btn-success:focus, .btn-success:active.focus, .btn-success.active.focus, .open > .dropdown-toggle.btn-success.focus {
+	background-color: #13987e !important;
+}
+
+/**
+ * Flexible Google-style progress indicator
+ */
+
+@keyframes progress {
+	50% { border-width: .5em 0; }
+	to { border-width: .5em 0 0 0; }
+}
+
+@keyframes rotate {
+	to { transform: rotate(-270deg); }
+}
+
+.progress {
+	display: inline-block;
+	font-size: 50px; /* Size of the progress indicator */
+	width: 1em; height: 1em;
+	border: solid white;
+	border-top-color: #ddd;
+	border-width: 0 0 .5em 0;
+	border-radius: 50%;
+	box-sizing: border-box;
+	margin: .1em .2em;
+	background: linear-gradient(white 50%, #ddd 50%);
+	background-origin: border-box;
+	transform: rotate(90deg);
+	animation: rotate 1s steps(4) infinite,
+	           progress .25s linear infinite alternate;
+	text-indent: 99em;
+	overflow: hidden;
+}
+
+.progress.small { font-size: 16px }
+.progress.large { font-size: 100px }
+
+.centered {
+	margin: 25vh auto 0 auto;
+}
+
+.navbar-brand {
+	cursor: pointer;
+}
