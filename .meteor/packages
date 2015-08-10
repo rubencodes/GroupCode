@@ -11,5 +11,5 @@ twbs:bootstrap
 fds:webrtc
 mizzao:sharejs-ace
 grokbot:bootstrap-flatly
-codechimera:meteor-bootstrap-sweetalert
 iron:router
+kevohagan:sweetalert

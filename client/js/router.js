@@ -14,7 +14,7 @@ Router.route("/:_id", {
   },
 
   action: function () {
-    var codebase = Code.findOne({ _id: this.params._id });
+	var codebase = Code.findOne({ _id: this.params._id });
 
 	if(codebase) {
 		Session.set("currentCodeId", codebase._id);
@@ -25,5 +25,6 @@ Router.route("/:_id", {
 		var error = { code: 404, message: "GroupCode Not Found" };
 		this.render("Error", { data: error});
 	}
-  }
+  },
+  name: "groupcode.codebox"
 });

@@ -23,13 +23,12 @@ body {
     border-right: 0px;
     border-color: rgba(0,0,0,0.2);
     color: #fff;
-    background: rgba(0,0,0,0.4);
+    background: rgba(24, 188, 156, 1);
 }
 a.navbar-brand {
 	color: #fff !important;
 	font-size: 32px;
 	font-family: monospace;
-    text-shadow: 1px 1px rgba(0,0,0,0.4);
 }
 .navbar-btn,.selectric-wrapper {
 	margin-right: 15px;
@@ -70,6 +69,10 @@ video#localVideo {
     height: 300px;
 }
 
+.container {
+	overflow: scroll;
+	padding-bottom: 20px;
+}
 .videoChatWrapper {
 	display: none;
 	position: fixed;
@@ -178,7 +181,7 @@ h3.help-text>small {
 #navbar-img {
 	height: 100%;
 	display: inline-block;
-	margin-top: -5px;
+	margin-top: -6px;
     padding-right: 10px;
 }
 
@@ -227,4 +230,11 @@ h3.help-text>small {
 
 .navbar-brand {
 	cursor: pointer;
+}
+
+.sweet-alert>button.confirm {
+    background: rgba(24, 188, 156, 1) !important;
+}
+.sweet-alert>button.confirm:hover {
+    background: rgb(22, 159, 132) !important;
 }

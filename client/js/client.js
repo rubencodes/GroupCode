@@ -86,7 +86,7 @@ Template.nav.events({
 		$(".videoChatWrapper").slideDown();
 	},
 	'click #download' : function() {
-		download("file."+$('option:selected', $("select")).attr("ext"), ace.edit("codeBox").getValue());
+		download(ace.edit("codeBox").getValue());
 	},
 	'click .navbar-brand' : function() {
 		Session.set("showVideoButtons", false);
@@ -94,6 +94,10 @@ Template.nav.events({
 		Session.set("videoShown", true);
 		Router.go("/");
 	}
+});
+
+Template.body.events({
+	'keydown *' : triggerDownload
 });
 
 Template.body.helpers({
@@ -132,7 +136,7 @@ Template.codeBox.onRendered(function() {
 		var mode = $(this).val();
 		ace.edit("codeBox").getSession().setMode('ace/mode/'+mode);
 		Code.update({ _id: Session.get("currentCodeId") }, { $set : { language: $("select").val() } });
-	}); 
+	});
 });
 
 Template.codeBox.helpers({
@@ -245,20 +249,50 @@ function nameAnimation() {
 		}
 
 		Session.set("name", tempName.join(""));
-	}, 20);
+	}, 10);
 }
 
-function download(filename, text) {
-	var element = document.createElement('a');
-	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-	element.setAttribute('download', filename);
+//trigger download on ctrl+s
+function triggerDownload(event) {
+	if(Router.current().route.getName() == "groupcode.codebox") {
+		if (event.keyCode == 83 && (navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey)) {
+			event.preventDefault();
+			download(ace.edit("codeBox").getValue());
+		}
+	}
+}
 
-	element.style.display = 'none';
-	document.body.appendChild(element);
+function download(text) {
+	swal({   
+		title: "Save File",   
+		text: "Enter a filename:",   
+		type: "input",   
+		showCancelButton: true,   
+		closeOnConfirm: false,   
+		animation: "slide-from-top",   
+		inputValue: "filename."+$('option:selected', $("select")).attr("ext"),
+  		confirmButtonColor: "rgb(24, 188, 156)",
+  		confirmButtonText: "Save",
+	}, function(filename){   
+		if (filename === false) 
+			return false;      
+		else if (filename === "") {
+			swal.showInputError("You need to write something!");
+			return false
+		} else {
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+			element.setAttribute('download', filename);
 
-	element.click();
+			element.style.display = 'none';
+			document.body.appendChild(element);
 
-	document.body.removeChild(element);
+			element.click();
+
+			document.body.removeChild(element);
+			swal.close();
+		}
+	});
 }
 
 function createChannel() {

@@ -48,7 +48,6 @@
 		</div>
 		{{#if showVideoButtons}}
 		  <ul class="nav navbar-nav navbar-right">
-			  <li><button id="download" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-save"></span></button></li>
 			  <li>
 			  	<select class="navbar-btn">
 					<option value="actionscript" 	ext="as">ActionScript</option>  
@@ -93,6 +92,7 @@
 					<option value="yaml" 		ext="yaml">YAML</option>  
 			  	</select>
 			  </li>
+			  <li><button id="download" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-save"></span></button></li>
 			  {{#if videoOngoing}}
 				  {{#if videoShown}}
 					<li><button id="hideVideoCall" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-chevron-up"></span></button></li>
