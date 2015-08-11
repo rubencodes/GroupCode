@@ -6,7 +6,7 @@ html,body {
     overflow: hidden;
 }
 body {
-	background: url(https://static.pexels.com/photos/7112/woman-typing-writing-windows.jpg);
+	background: url(placeit.jpg);
     background-size: cover;
     background-position: center center;
 }
@@ -28,7 +28,7 @@ body {
 a.navbar-brand {
 	color: #fff !important;
 	font-size: 32px;
-	font-family: monospace;
+	font-family: 'Source Code Pro', monospace;
 }
 .navbar-btn,.selectric-wrapper {
 	margin-right: 10px;
@@ -40,7 +40,7 @@ a.navbar-brand {
 	position: relative;
 	top: 0;
 	left: 0;
-	font-family: monospace;
+	font-family: 'Source Code Pro', monospace;
 	font-size: 18px;
 	resize: none;
 	flex: 1 1 auto;
@@ -161,17 +161,20 @@ h3 {
 	margin-top: 21px;
     margin-bottom: 21px;
     line-height: 32px;
+	font-family: 'Source Code Pro', monospace;
 }
 
 h1 {
-	font-family: monospace;
+	font-family: 'Source Code Pro', monospace;
+	font-size: 64px;
 	font-weight: bold;
 	color: #fff;
 	text-align: center;
+	text-shadow: 1px 1px 5px rgba(0, 0, 0,0.3);
 }
 
 h1>small {
-	font-family: "Helvetica", sans-serif;
+	font-family: 'Source Code Pro', monospace;
 	color: #fff;
 }
 h3.help-text>small {
@@ -237,4 +240,12 @@ h3.help-text>small {
 }
 .sweet-alert>button.confirm:hover {
     background: rgb(22, 159, 132) !important;
+}
+.btn-success.btn-block,#drop_zone {
+	background: rgba(24, 188, 156, 0.8);
+    border-radius: 5px;
+}
+.btn-success:hover,#drop_zone:hover {
+	background: rgba(22, 159, 132,0.8);
+    border-radius: 5px;
 }
