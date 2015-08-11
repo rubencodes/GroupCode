@@ -1,12 +1,10 @@
 /* CSS declarations go here */
 html,body {
     background: #333;
-	height: 100%;
-    max-height: 100%;
-    overflow: hidden;
+    min-height: 100vh;
 }
 body {
-	background: url(placeit.jpg);
+	background: url(placeit3.jpg);
     background-size: cover;
     background-position: center center;
 }
@@ -70,7 +68,6 @@ video#localVideo {
 }
 
 .container {
-	overflow: scroll;
 	padding-bottom: 20px;
 }
 .videoChatWrapper {
@@ -166,11 +163,11 @@ h3 {
 
 h1 {
 	font-family: 'Source Code Pro', monospace;
-	font-size: 64px;
+	font-size: 48px;
 	font-weight: bold;
 	color: #fff;
 	text-align: center;
-	text-shadow: 1px 1px 5px rgba(0, 0, 0,0.3);
+	text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
 }
 
 h1>small {
