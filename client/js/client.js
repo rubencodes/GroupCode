@@ -170,6 +170,16 @@ Template.codeBox.helpers({
 		return function(editor) {
 			if(Session.get("fileUploaded")) {
 				editor.setValue(Session.get("fileUploaded"));
+				
+				if(ext = Session.get("fileExtension")) {
+					if(option = $("option[ext='"+ext+"']").attr("value")) {
+						$("select").val(option).selectric("refresh");
+						ace.edit("codeBox").getSession().setMode('ace/mode/'+option);
+						Code.update({ _id: Session.get("currentCodeId") }, { $set : { language: $("select").val() } });
+					}
+					Session.set("fileExtension", null);
+				}
+				
 				Session.set("fileUploaded", null);
 			}
 		}
@@ -323,6 +333,13 @@ function handleFileSelect(evt) {
 		reader.readAsText(file, "UTF-8");
 		reader.onload = function (evt) {
 			Session.set("fileUploaded", evt.target.result);
+			
+			//get file extension
+			var ext = file.name.match(/\.([0-9a-z]+)(?:[\?#]|$)/);
+			if(ext.length > 0) {
+				ext = ext[0].substring(1);
+				Session.set("fileExtension", ext);
+			}
 		}
 	}
 }
