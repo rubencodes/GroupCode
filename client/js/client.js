@@ -145,7 +145,7 @@ Template.codeBox.onRendered(function() {
     var room = Session.get("currentCodeId");
     Streamy.on(room, function(d, s) {
         console.log(d.data);
-        if (d.data === "startVideo") {
+        if (d.data === "startVideo" &&  !Session.get("videoOngoing")) {
             swal({
                 title: "Incoming Video Call",
                 text: "Your partner would like to video chat with you.",
