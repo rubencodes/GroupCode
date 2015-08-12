@@ -155,7 +155,7 @@ Template.codeBox.onRendered(function() {
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Join Call!",
                 cancelButtonText: "Decline call",
-                closeOnConfirm: false,
+                closeOnConfirm: true,
                 closeOnCancel: false
             }, function(isConfirm) {
                 if (isConfirm) {
@@ -168,7 +168,7 @@ Template.codeBox.onRendered(function() {
                     webrtc.startLocalVideo();
                     $(".videoChatWrapper").slideDown();
                 } else {
-                    swal("Declined!", "Your have declined the call.", "error");
+                    swal({title:"Declined!", timer: 2000,text:"Your have declined the call.", type: "error"});
 
                 }
             });
