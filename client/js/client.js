@@ -67,21 +67,10 @@ Template.nav.helpers({
 
 Template.nav.events({
     'click #startVideoCall': function() {
-        Session.set("videoOngoing", true);
-        var room = Session.get("currentCodeId");
-        Streamy.broadcast(room, {
-            data: 'startVideo'
-        });
-        webrtc.startLocalVideo();
-        $(".videoChatWrapper").slideDown();
+        startCall();
     },
     'click #stopVideoCall': function() {
-        $(".videoChatWrapper").slideUp(400, function() {
-            Session.set("videoOngoing", false);
-            var room = Session.get("currentCodeId");
-            webrtc.leaveRoom(room);
-            webrtc.stopLocalVideo();
-        });
+        endCall();
     },
     'click #hideVideoCall': function() {
         Session.set("videoShown", false);
@@ -141,11 +130,15 @@ Template.landing.events({
 });
 
 Template.codeBox.onRendered(function() {
-
+	//id of current room
     var room = Session.get("currentCodeId");
+	
+	//on Streamy message handler
     Streamy.on(room, function(d, s) {
-        console.log(d.data);
+		//if we get a call and this user didn't start the video, alert them
         if (d.data === "startVideo" &&  !Session.get("videoOngoing")) {
+			Streamy.broadcast(room, { data : "callReceived" });
+			
             swal({
                 title: "Incoming Video Call",
                 text: "Your partner would like to video chat with you.",
@@ -161,21 +154,26 @@ Template.codeBox.onRendered(function() {
                 if (isConfirm) {
  
                     Session.set("videoOngoing", true);
-                    // var room = Session.get("currentCodeId");
-                    // Streamy.broadcast(room, {
-                    //     data: 'startVideo'
-                    // });
+					
                     webrtc.startLocalVideo();
                     $(".videoChatWrapper").slideDown();
                 } else {
                     swal({title:"Declined!", timer: 2000,text:"Your have declined the call.", type: "error"});
-
+					Streamy.broadcast(room, { data : "callDeclined" });
                 }
             });
-        }
+        } 
+		//if call was received, and this user is part of the call, cancel timeout that auto-ends the call
+		else if(d.data === "callReceived" && Session.get("videoOngoing")) {
+			clearTimeout(Session.get("callTimeout"));
+			Session.set("callTimeout", null);
+		} else if(d.data === "callDeclined" && Session.get("videoOngoing")) {
+			endCall();
+			swal({title:"No One's Home", timer: 5000,text:"Looks like no one picked up! :(", type: "error"});
+		}
     });
 
-
+	//when the selected element changes, change the editor mode and store in db
     $('select').selectric().on('selectric-change', function(element) {
         var mode = $(this).val();
         ace.edit("codeBox").getSession().setMode('ace/mode/' + mode);
@@ -276,6 +274,7 @@ Template.videoChat.events({
     },
 });
 
+//animates name
 function nameAnimation() {
     var tempName = "**********".split("");
     var realName = "GroupCodes".split("");
@@ -318,6 +317,7 @@ function triggerDownload(event) {
     }
 }
 
+//download prompt
 function download(text) {
     swal({
         title: "Save File",
@@ -333,8 +333,8 @@ function download(text) {
         if (filename === false)
             return false;
         else if (filename === "") {
-            swal.showInputError("You need to write something!");
-            return false
+            swal.showInputError("Please enter a filename.");
+            return false;
         } else {
             var element = document.createElement('a');
             element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -351,8 +351,8 @@ function download(text) {
     });
 }
 
+//create groupcode on the server
 function createGroupCode() {
-    //create groupcode on the server
     Meteor.call("createGroupCode", "javascript", function(err, codeId) {
         if (!err) {
             Session.set("currentCodeId", codeId);
@@ -361,9 +361,9 @@ function createGroupCode() {
     });
 }
 
-/* FILE API */
-
+//user uploaded a file, now what?
 function handleFileSelect(evt) {
+	//stop any default events
     evt.stopPropagation();
     evt.preventDefault();
     evt = evt.originalEvent;
@@ -391,5 +391,37 @@ function handleFileSelect(evt) {
     }
 }
 
+//handle end call
+function endCall() {
+	//hide video call, reset boolean and stop streaming
+	$(".videoChatWrapper").slideUp(400, function() {
+		Session.set("videoOngoing", false);
+		var room = Session.get("currentCodeId");
+		webrtc.leaveRoom(room);
+		webrtc.stopLocalVideo();
+	});
+}
 
-/* END FILE API */
+//handle start video call
+function startCall() {
+	Session.set("videoOngoing", true);
+	var room = Session.get("currentCodeId");
+
+	//start the call
+	webrtc.startLocalVideo();
+
+	//show the call
+	$(".videoChatWrapper").slideDown();
+
+	//broadcast the call to connected users
+	Streamy.broadcast(room, {
+		data: 'startVideo'
+	});
+
+	//ends call after ten seconds if no one is connected
+	var endCallIfNoUsers = setTimeout(function() {
+		endCall();
+		swal({title:"No One's Home", timer: 5000, text:"Looks like no one picked up! :(", type: "error"});
+	}, 10000);
+	Session.set("callTimeout", endCallIfNoUsers);
+}

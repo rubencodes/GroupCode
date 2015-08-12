@@ -1,7 +1,7 @@
 // on the server
 Meteor.publish('codebase', function(id) {
 	check(id,String);
-  return Code.find({ _id : id });
+ 	return Code.find({ _id : id });
 });
 
 Meteor.methods({
