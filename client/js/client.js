@@ -111,7 +111,7 @@ Template.body.helpers({
 
 Template.landing.events({
 	'click #create': function() {
-		createChannel();
+		createGroupCode();
 	},
 	'click #drop_zone': function() {
 		//trigger file upload
@@ -126,11 +126,11 @@ Template.landing.events({
 	},
 	'drop #drop_zone' : function(evt) {
 		handleFileSelect(evt);
-		createChannel();
+		createGroupCode();
 	},
 	'change #files': function(evt) {
 		handleFileSelect(evt);
-		createChannel();
+		createGroupCode();
 	}
 });
 
@@ -138,7 +138,9 @@ Template.codeBox.onRendered(function() {
 	$('select').selectric().on('selectric-change', function(element){
 		var mode = $(this).val();
 		ace.edit("codeBox").getSession().setMode('ace/mode/'+mode);
-		Code.update({ _id: Session.get("currentCodeId") }, { $set : { language: $("select").val() } });
+		
+		//update stored groupcode language
+		Meteor.call("updateGroupCodeLanguage", Session.get("currentCodeId"), $("select").val());
 	});
 });
 
@@ -175,7 +177,7 @@ Template.codeBox.helpers({
 					if(option = $("option[ext='"+ext+"']").attr("value")) {
 						$("select").val(option).selectric("refresh");
 						ace.edit("codeBox").getSession().setMode('ace/mode/'+option);
-						Code.update({ _id: Session.get("currentCodeId") }, { $set : { language: $("select").val() } });
+						Meteor.call("updateGroupCodeLanguage", Session.get("currentCodeId"), $("select").val());
 					}
 					Session.set("fileExtension", null);
 				}
@@ -185,10 +187,6 @@ Template.codeBox.helpers({
 		}
 	}
 });
-
-Template.codeBox.events({
-	
-}); 
 
 Template.videoChat.events({
 	'click #videoControl': function() {
@@ -308,10 +306,14 @@ function download(text) {
 	});
 }
 
-function createChannel() {
-	var codeId = Code.insert({ language: "javascript" });
-	Session.set("currentCodeId", codeId);
-	Router.go("/"+codeId);
+function createGroupCode() {
+	//create groupcode on the server
+	Meteor.call("createGroupCode", "javascript", function(err, codeId) {
+		if(!err) {
+			Session.set("currentCodeId", codeId);
+			Router.go("/"+codeId);
+		}
+	});
 }
 
 /* FILE API */

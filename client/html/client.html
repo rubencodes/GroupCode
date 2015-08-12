@@ -93,18 +93,18 @@
 					<option value="yaml" 		ext="yaml">YAML</option>  
 			  	</select>
 			  </li>
-			  <li><button id="download" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-save"></span></button></li>
-			  <li><button id="share" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-share"></span></button></li>
+			  <li><button id="download" class="btn btn-primary navbar-btn" title="Download File"><span class="glyphicon glyphicon-save"></span></button></li>
+			  <li><button id="share" class="btn btn-primary navbar-btn" title="Share GroupCode via Email"><span class="glyphicon glyphicon-share"></span></button></li>
 			  {{#if videoOngoing}}
 				  {{#if videoShown}}
-					<li><button id="hideVideoCall" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-chevron-up"></span></button></li>
-					<li><button id="stopVideoCall" class="btn btn-danger navbar-btn"><span class="glyphicon glyphicon-stop"></span></button></li>
+					<li><button id="hideVideoCall" class="btn btn-primary navbar-btn" title="Hide Video"><span class="glyphicon glyphicon-chevron-up"></span></button></li>
+					<li><button id="stopVideoCall" class="btn btn-danger navbar-btn" title="Stop Video Call"><span class="glyphicon glyphicon-stop"></span></button></li>
 				  {{else}}
-					<li><button id="showVideoCall" class="btn btn-primary navbar-btn"><span class="glyphicon glyphicon-chevron-down"></span></button></li>
-					<li><button id="stopVideoCall" class="btn btn-danger navbar-btn"><span class="glyphicon glyphicon-stop"></span></button></li>
+					<li><button id="showVideoCall" class="btn btn-primary navbar-btn" title="Show Video"><span class="glyphicon glyphicon-chevron-down"></span></button></li>
+					<li><button id="stopVideoCall" class="btn btn-danger navbar-btn" title="Stop Video Call"><span class="glyphicon glyphicon-stop"></span></button></li>
 				  {{/if}}
 			  {{else}}
-				  <li><button id="startVideoCall" class="btn btn-danger navbar-btn"><span class="glyphicon glyphicon-facetime-video"></span></button></li>
+				  <li><button id="startVideoCall" class="btn btn-danger navbar-btn" title="Join Video Call"><span class="glyphicon glyphicon-facetime-video"></span></button></li>
 			  {{/if}}
 		  </ul>
 		{{/if}}
