@@ -159,7 +159,7 @@ Template.codeBox.onRendered(function() {
                 closeOnCancel: false
             }, function(isConfirm) {
                 if (isConfirm) {
-                    swal("Accepted", "You have accepted the call :)", "success");
+ 
                     Session.set("videoOngoing", true);
                     // var room = Session.get("currentCodeId");
                     // Streamy.broadcast(room, {
