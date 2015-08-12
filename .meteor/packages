@@ -9,6 +9,7 @@ twbs:bootstrap
 fds:webrtc
 mizzao:sharejs-ace
 grokbot:bootstrap-flatly
-iron:router
 kevohagan:sweetalert
 yuukan:streamy
+kadira:flow-router
+kadira:blaze-layout

@@ -7,10 +7,12 @@
 </head>
 
 <body class="box">
-	{{> nav}}
-
-	{{>Router}}
 </body>
+
+<template name="mainLayout">
+  {{> Template.dynamic template=top}}
+  {{> Template.dynamic template=main}}
+</template>
 
 <template name="landing">
 	<div class="container">

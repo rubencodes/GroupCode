@@ -98,7 +98,7 @@ Template.nav.events({
         Session.set("showVideoButtons", false);
         Session.set("videoOngoing", false);
         Session.set("videoShown", true);
-        Router.go("/");
+        FlowRouter.go("/");
     },
     'click #share': function() {
         location.href = 'mailto:?subject=Join My GroupCode!&body=Hello,%0D%0A%0D%0ACome help me code on GroupCode, the free, real-time, collaborative code-editor! Follow the link below to join me.%0D%0A%0D%0A%0D%0A%0D%0AThanks!';
@@ -140,12 +140,38 @@ Template.landing.events({
     }
 });
 
+
+Template.codeBox.onCreated(function() {
+    var self = this;
+    self.autorun(function() {
+        var id = FlowRouter.getParam('_id');
+        self.subscribe('codebase', id);
+        var codebase = Code.findOne({
+            _id: id
+        });
+        console.log("test");
+        if (codebase) {
+            Session.set("currentCodeId", codebase._id);
+            Session.set("currentChannelId", codebase.codeId);
+            Session.set("showVideoButtons", true);
+        console.log("error2");
+        } else {
+            var error = {
+                code: 404,
+                message: "GroupCode Not Found"
+            };
+            console.log("error");
+            FlowRouter.go('/error');
+        }
+    });
+});
+
 Template.codeBox.onRendered(function() {
 
     var room = Session.get("currentCodeId");
     Streamy.on(room, function(d, s) {
         console.log(d.data);
-        if (d.data === "startVideo" &&  !Session.get("videoOngoing")) {
+        if (d.data === "startVideo" && !Session.get("videoOngoing")) {
             swal({
                 title: "Incoming Video Call",
                 text: "Your partner would like to video chat with you.",
@@ -159,7 +185,7 @@ Template.codeBox.onRendered(function() {
                 closeOnCancel: false
             }, function(isConfirm) {
                 if (isConfirm) {
- 
+
                     Session.set("videoOngoing", true);
                     // var room = Session.get("currentCodeId");
                     // Streamy.broadcast(room, {
@@ -168,7 +194,12 @@ Template.codeBox.onRendered(function() {
                     webrtc.startLocalVideo();
                     $(".videoChatWrapper").slideDown();
                 } else {
-                    swal({title:"Declined!", timer: 2000,text:"Your have declined the call.", type: "error"});
+                    swal({
+                        title: "Declined!",
+                        timer: 2000,
+                        text: "Your have declined the call.",
+                        type: "error"
+                    });
 
                 }
             });
@@ -310,7 +341,7 @@ function nameAnimation() {
 
 //trigger download on ctrl+s
 function triggerDownload(event) {
-    if (Router.current().route.getName() == "groupcode.codebox") {
+    if (FlowRouter.getRouteName() == "groupcode.codebox") {
         if (event.keyCode == 83 && (navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey)) {
             event.preventDefault();
             download(ace.edit("codeBox").getValue());
@@ -356,7 +387,7 @@ function createGroupCode() {
     Meteor.call("createGroupCode", "javascript", function(err, codeId) {
         if (!err) {
             Session.set("currentCodeId", codeId);
-            Router.go("/" + codeId);
+            FlowRouter.go("/" + codeId);
         }
     });
 }

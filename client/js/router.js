@@ -1,30 +1,42 @@
-Router.route("/", function () {
-  this.render('landing');
-}, {
-  name: 'groupcode.landing'
+
+
+
+FlowRouter.route("/", {
+  //FOR RUBEN when he is like, "What is flow router?"
+//: https://kadira.io/academy/meteor-routing-guide
+    name: "groupcode.landing",
+    action: function(params) {
+        BlazeLayout.render("mainLayout", {
+            top: "nav",
+            main: "landing"
+        });
+    }
 });
 
-Router.route("/:_id", {
-  // rendered until the subscriptions are ready
-  loadingTemplate: 'loading',
 
-  waitOn: function () {
-    // return one handle, a function, or an array
-    return Meteor.subscribe('codebase', this.params._id);
-  },
+FlowRouter.route("/error", {
 
-  action: function () {
-	var codebase = Code.findOne({ _id: this.params._id });
+    name: "groupcode.error",
+    action: function(params) {
+        BlazeLayout.render("mainLayout", {
+            top: "nav",
+            main: "Error"
+        });
+    }
+});
 
-	if(codebase) {
-		Session.set("currentCodeId", codebase._id);
-		Session.set("currentChannelId", codebase.codeId);
-		Session.set("showVideoButtons", true);
-		this.render('codeBox', { data: codebase });
-	} else {
-		var error = { code: 404, message: "GroupCode Not Found" };
-		this.render("Error", { data: error});
-	}
-  },
-  name: "groupcode.codebox"
+
+
+FlowRouter.route("/:_id", {
+    name: "groupcode.codebox",
+        // rendered until the subscriptions are ready
+    //loadingTemplate: 'loading',
+
+    action: function() {
+    BlazeLayout.render("mainLayout", {
+            top: "nav",
+            main: "codebox"
+        });
+    }
+
 });
