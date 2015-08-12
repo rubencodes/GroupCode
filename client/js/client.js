@@ -66,6 +66,7 @@ Template.nav.helpers({
 Template.nav.events({
 	'click #startVideoCall' : function() {
 		Session.set("videoOngoing", true);
+		Streamy.broadcast('initiateVideoCall', { data: 'start' });
 		webrtc.startLocalVideo();
 		$(".videoChatWrapper").slideDown();
 	},
@@ -135,6 +136,15 @@ Template.landing.events({
 });
 
 Template.codeBox.onRendered(function() {
+
+	// Attach an handler for a specific message
+Streamy.on('initiateVideoCall', function(d, s) {
+  console.log(d.data); // Will print 'world!'
+
+  // On the server side only, the parameter 's' is the socket which sends the message, you can use it to reply to the client, see below
+});
+
+
 	$('select').selectric().on('selectric-change', function(element){
 		var mode = $(this).val();
 		ace.edit("codeBox").getSession().setMode('ace/mode/'+mode);
