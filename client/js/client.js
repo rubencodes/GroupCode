@@ -159,10 +159,17 @@ Template.codeBox.onRendered(function() {
                 closeOnCancel: false
             }, function(isConfirm) {
                 if (isConfirm) {
-                 swal("Accepted", "You have accepted the call :)", "success");
+                    swal("Accepted", "You have accepted the call :)", "success");
+                    Session.set("videoOngoing", true);
+                    // var room = Session.get("currentCodeId");
+                    // Streamy.broadcast(room, {
+                    //     data: 'startVideo'
+                    // });
+                    webrtc.startLocalVideo();
+                    $(".videoChatWrapper").slideDown();
                 } else {
-                	 swal("Declined!", "Your have declined the call.", "error");
-                   
+                    swal("Declined!", "Your have declined the call.", "error");
+
                 }
             });
         }
