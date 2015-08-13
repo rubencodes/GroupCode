@@ -70,7 +70,15 @@ Template.nav.events({
         startCall();
     },
     'click #stopVideoCall': function() {
-        endCall();
+		//id of current room
+    	var room = Session.get("currentCodeId");
+		
+		//announce cancelled call
+		Streamy.broadcast(room, { data : "callCancelled" });
+		
+		stopSound(); //stop dial sound
+		stopDial();  //stop dial indicator
+        endCall();	 //end call
     },
     'click #hideVideoCall': function() {
         Session.set("videoShown", false);
@@ -161,7 +169,6 @@ Template.codeBox.onRendered(function() {
                     webrtc.startLocalVideo();
                     $(".videoChatWrapper").slideDown();
                 } else {
-                    swal({title:"Declined!", timer: 2000,text:"Your have declined the call.", type: "error"});
 					Streamy.broadcast(room, { data : "callDeclined" });
                 }
             });
@@ -172,12 +179,18 @@ Template.codeBox.onRendered(function() {
 			Session.set("callTimeout", null);
 		} else if(d.data === "callDeclined" && Session.get("videoOngoing")) {
 			stopSound(); //stop dial sound
+			stopDial();  //stop dial indicator
 			
 			//end call and alert
 			endCall();
 			swal({title:"No One's Home", timer: 5000,text:"Looks like no one picked up! :(", type: "error"});
 		} else if(d.data === "callAccepted" && Session.get("videoOngoing")) {
 			stopSound(); //stop dial sound
+			stopDial();  //stop dial indicator
+		} else if(d.data === "callCancelled" && !Session.get("videoOngoing")) {
+			stopSound(); //stop dial sound
+//			swal.close();
+			swal({title:"You Missed a Call", type: "error"});
 		}
     });
 
@@ -431,10 +444,17 @@ function startCall() {
 	
 	//start dial sound
 	startSound("dial.mp3");
+	
+	//start dialing indicator
+	startDial();
 
 	//ends call after ten seconds if no one is connected
 	var endCallIfNoUsers = setTimeout(function() {
+		//stop dial sound
 		stopSound();
+		
+		//stop dialing indicator
+		stopDial();
 		
 		//end call and alert
 		endCall();
@@ -462,4 +482,16 @@ function startSound(file) {
 	audio.loop = "true";
 	document.body.appendChild(audio);
 	audio.play();
+}
+
+function stopDial() {
+	var dial = document.getElementById("dial");
+	
+	if(dial) {
+		dial.remove();
+	}
+}
+
+function startDial() {
+	document.getElementById("remotesVideos").innerHTML = "<div id=\"dial\" class=\"large progress phonecall\"></div>";
 }
