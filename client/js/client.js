@@ -138,6 +138,8 @@ Template.codeBox.onRendered(function() {
 		//if we get a call and this user didn't start the video, alert them
         if (d.data === "startVideo" &&  !Session.get("videoOngoing")) {
 			Streamy.broadcast(room, { data : "callReceived" });
+			//start ring sound
+			startSound("ring.mp3");
 			
             swal({
                 title: "Incoming Video Call",
@@ -151,10 +153,11 @@ Template.codeBox.onRendered(function() {
                 closeOnConfirm: true,
                 closeOnCancel: false
             }, function(isConfirm) {
+				stopSound(); //stop ring sound
                 if (isConfirm) {
- 
                     Session.set("videoOngoing", true);
 					
+					Streamy.broadcast(room, { data : "callAccepted" });
                     webrtc.startLocalVideo();
                     $(".videoChatWrapper").slideDown();
                 } else {
@@ -168,8 +171,13 @@ Template.codeBox.onRendered(function() {
 			clearTimeout(Session.get("callTimeout"));
 			Session.set("callTimeout", null);
 		} else if(d.data === "callDeclined" && Session.get("videoOngoing")) {
+			stopSound(); //stop dial sound
+			
+			//end call and alert
 			endCall();
 			swal({title:"No One's Home", timer: 5000,text:"Looks like no one picked up! :(", type: "error"});
+		} else if(d.data === "callAccepted" && Session.get("videoOngoing")) {
+			stopSound(); //stop dial sound
 		}
     });
 
@@ -395,7 +403,10 @@ function handleFileSelect(evt) {
 function endCall() {
 	//hide video call, reset boolean and stop streaming
 	$(".videoChatWrapper").slideUp(400, function() {
+		//hide video
 		Session.set("videoOngoing", false);
+		
+		//leave room
 		var room = Session.get("currentCodeId");
 		webrtc.leaveRoom(room);
 		webrtc.stopLocalVideo();
@@ -417,11 +428,38 @@ function startCall() {
 	Streamy.broadcast(room, {
 		data: 'startVideo'
 	});
+	
+	//start dial sound
+	startSound("dial.mp3");
 
 	//ends call after ten seconds if no one is connected
 	var endCallIfNoUsers = setTimeout(function() {
+		stopSound();
+		
+		//end call and alert
 		endCall();
 		swal({title:"No One's Home", timer: 5000, text:"Looks like no one picked up! :(", type: "error"});
 	}, 10000);
 	Session.set("callTimeout", endCallIfNoUsers);
+}
+
+//stop sound from playing
+function stopSound() {
+	var audio = document.getElementById("sound");
+	
+	if(audio) {
+		audio.pause();
+		audio.remove();
+	}
+}
+
+function startSound(file) {
+	stopSound(); //stop any sounds playing
+	
+	//start playing the dial tone
+	var audio = new Audio(file);
+	audio.id = "sound";
+	audio.loop = "true";
+	document.body.appendChild(audio);
+	audio.play();
 }
