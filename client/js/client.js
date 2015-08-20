@@ -189,7 +189,6 @@ Template.codeBox.onRendered(function() {
 			stopDial();  //stop dial indicator
 		} else if(d.data === "callCancelled" && !Session.get("videoOngoing")) {
 			stopSound(); //stop dial sound
-//			swal.close();
 			swal({title:"You Missed a Call", type: "error"});
 		}
     });
