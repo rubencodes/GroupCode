@@ -1,7 +1,15 @@
 {
   "meteor": {},
   "dependencies": {
-    "basePackages": {},
-    "packages": {}
+    "basePackages": {
+      "packmeteor": {}
+    },
+    "packages": {
+      "packmeteor": {
+        "git": "https://github.com/SpaceCapsule/packmeteor.git",
+        "tag": "v0.1.2",
+        "commit": "bbb11ab3f6e620a33e1bd541f72d44d6f142d070"
+      }
+    }
   }
 }

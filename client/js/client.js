@@ -92,7 +92,6 @@ Template.nav.events({
         download(ace.edit("codeBox").getValue());
     },
     'click .navbar-brand': function() {
-        Session.set("showVideoButtons", false);
         Session.set("videoOngoing", false);
         Session.set("videoShown", true);
         Router.go("/");
@@ -112,8 +111,14 @@ Template.body.helpers({
     }
 });
 
-Template.landing.events({
+Template.error.events({
     'click #create': function() {
+        createGroupCode();
+    }
+});
+
+Template.landing.events({
+    'click #create,#create-2': function() {
         createGroupCode();
     },
     'click #drop_zone': function() {
@@ -128,12 +133,10 @@ Template.landing.events({
         //		evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     },
     'drop #drop_zone': function(evt) {
-        handleFileSelect(evt);
-        createGroupCode();
+        handleFileSelect(evt, createGroupCode);
     },
     'change #files': function(evt) {
-        handleFileSelect(evt);
-        createGroupCode();
+        handleFileSelect(evt, createGroupCode);
     }
 });
 
@@ -373,6 +376,9 @@ function download(text) {
 
 //create groupcode on the server
 function createGroupCode() {
+	if(Session.get("fileUploaded") == null) {
+		Session.set("fileUploaded", "/* Welcome to GroupCodes! Get started collaborating with others by sharing your current URL, or press the 'Share' button to share it via email. Anything you type here will be visible to anyone with the URL. */");
+	}
     Meteor.call("createGroupCode", "javascript", function(err, codeId) {
         if (!err) {
             Session.set("currentCodeId", codeId);
@@ -382,7 +388,7 @@ function createGroupCode() {
 }
 
 //user uploaded a file, now what?
-function handleFileSelect(evt) {
+function handleFileSelect(evt, callback) {
 	//stop any default events
     evt.stopPropagation();
     evt.preventDefault();
@@ -392,6 +398,11 @@ function handleFileSelect(evt) {
     var files = evt.dataTransfer ? evt.dataTransfer.files : evt.target.files; // FileList object
 
     //we only support one file at a time
+	if(files.length > 1) {
+		swal({title:"No Multifile Support", text:"Sorry, GroupCodes don't yet support multiple files; files must be uploaded individually.", type: "error"});
+		return;
+	}
+	
     var file = files[0];
 
     //if file exists, read file & store it
@@ -405,10 +416,29 @@ function handleFileSelect(evt) {
             var ext = file.name.match(/\.([0-9a-z]+)(?:[\?#]|$)/);
             if (ext.length > 0) {
                 ext = ext[0].substring(1);
+				
+				if(validExtension(ext) == false) {
+					swal({title:"File Upload Error", text:"Sorry, this type of file is not yet supported. We'll get right on that!", type: "error"});
+					return;
+				}
+				
                 Session.set("fileExtension", ext);
             }
+			
+			if(callback) callback();
         }
+		reader.onerror = function(evt) {
+			swal({title:"File Upload Error", text:"Sorry, this type of file is not yet supported. We'll get right on that!", type: "error"});
+		}
     }
+}
+
+
+var invalidExtensions = ["xlsx", "xlsm", "doc", "docx", "pptx", "xltx", "xltm", "xlsb", "xlam", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm", "thmx", "dotm", "dotx", "docm", "jpg", "jpeg", "gif", "png", "zip", "tar", "gz", "mov", "mp3", "mp4", "flac", "iso", "dmg"];
+function validExtension(ext) {
+	if(invalidExtensions.indexOf(ext.toLowerCase()) >= 0)
+	   return false;
+	return true;
 }
 
 //handle end call

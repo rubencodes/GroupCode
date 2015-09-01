@@ -1,4 +1,5 @@
 Router.route("/", function () {
+  Session.set("showVideoButtons", false);
   this.render('landing');
 }, {
   name: 'groupcode.landing'
@@ -22,6 +23,7 @@ Router.route("/:_id", {
 		Session.set("showVideoButtons", true);
 		this.render('codeBox', { data: codebase });
 	} else {
+		Session.set("showVideoButtons", false);
 		var error = { code: 404, message: "GroupCode Not Found" };
 		this.render("Error", { data: error});
 	}

@@ -21,13 +21,13 @@
 			</div><br><br>
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
-					<button id="create" class="btn btn-success btn-block"><h3>Start a GroupCode</h3></button>
+					<button id="create" class="btn btn-success btn-block"><h3>Start a New GroupCode</h3></button>
 				</div>
 			</div><br>
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
 					<div id="drop_zone" class="file-upload-box btn-success">
-						<h3 class="help-text">Start with File<br><small>Drag & Drop or Click to Upload</small></h3>
+						<h3 class="help-text">Start with File<br><small>(Drag & Drop or Click to Upload)</small></h3>
 						<input type="file" id="files" name="files[]" />
 					</div>
 				</div>
@@ -38,26 +38,34 @@
 		<div class="container">
 			<br><br>
 			<div class="row">
-				<h1>What is a GroupCode?</h1>
+				<h1>What's a GroupCode?</h1>
 			</div><br><br>
 			<div class="row">
-				<div class="col-md-6 col-md-offset-3"><img src="placeit.jpg" style="width:100%;box-shadow: 0px 0px 30px rgb(0, 0, 0)"></div>
-			</div><br><br>
-			<div class="row">
-				<div class="col-md-4">
-					<h1><small>&lt;code&gt;</small></h1>
-					<p>GroupCodes are free, collaborative code editing rooms designed to improve communication between team members. We use the open-source Ace code editor used by big-shots like Cloud9 to provide a top-notch coding experience.</p>
+				<div class="col-md-6 col-md-offset-3">
+					<div class="card">
+						<img src="placeit.jpg" class="mini-img">
+						<h2>&lt;code&gt;</h2>
+						<p>GroupCodes are free, collaborative code editing rooms designed to improve communication between team members during development. We use the open-source Ace code editor used by big-shots like Cloud9 to provide a first-class coding experience.</p>
+					</div>
 				</div>
-				<div class="col-md-4">
-					<h1><small>&lt;collaborate&gt;</small></h1>
-					<p>WebRTC, the same tech that powers Skype and Google Hangouts, powers GroupCode's built-in video conferencing feature. GroupCode's video chat is a fully-featured communications tool that can get out of the way when it's go-time.</p>
+				<div class="col-md-6 col-md-offset-3">
+					<div class="card">
+						<h2>&lt;collaborate&gt;</h2>
+						<p>WebRTC, the same technology behind Skype and Google Hangouts, powers GroupCode's built-in video conferencing features. GroupCode's video chat is a fully-featured communications tool that's there when you need it and out of the way when it's go-time.</p>
+					</div>
 				</div>
-				<div class="col-md-4">
-					<h1><small>&lt;realtime&gt;</small></h1>
-					<p>GroupCodes are all about real-time communication, and that goes for code too. If you've seen Google Docs in action, then you will feal right at home in a GroupCode. Use them for anything from coding with a partner to conducting an interview. They're free!</p>
+				<div class="col-md-6 col-md-offset-3">
+					<div class="card">
+						<h2>&lt;real-time&gt;</h2>
+						<p>GroupCodes are all about real-time communication, and that goes for code too. If you've seen Google Docs in action, you will feal right at home in a GroupCode. Use them for anything from coding with a partner to conducting a coding interview. They're free!</p>
+						<button id="create-2" class="btn btn-success btn-block">Start a New GroupCode</button>
+					</div>
 				</div>
 			</div><br><br><br>
 		</div>
+	</section>
+	<section class="section-bg" style="background:rgb(51, 51, 51)">
+		<p class="text-center footer">Copyright &copy; <a href="http://Ruben.Codes">Ruben.Codes</a> 2015</p>
 	</section>
 </template>
 
@@ -169,10 +177,12 @@
 
 
 <template name="error">
-	<section class="section-img">
-		<h1 class="container">
-			Uh-oh...This is not the GroupCode you are looking for!<br>
-			<small>Try going home and starting a new one!</small>
-		</h1>
+	<section class="section-img" style="height:100vh">
+		<h1 class="container">Uh-oh...This is not the GroupCode you are looking for!</h1>
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<button id="create" class="btn btn-success btn-block"><h3>Start a New GroupCode</h3></button>
+			</div>
+		</div>
 	</section>
 </template>
