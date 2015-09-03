@@ -18,8 +18,6 @@ Template.nav.onRendered(function() {
 
     // a peer video has been added
     webrtc.on('videoAdded', function(video, peer) {
-        console.log('video added', peer);
-
         var remotes = document.getElementById('remotesVideos');
         if (remotes) {
             var container = document.createElement('div');
@@ -169,6 +167,7 @@ Template.codeBox.onRendered(function() {
                     Session.set("videoOngoing", true);
 					
 					Streamy.broadcast(room, { data : "callAccepted" });
+					console.log("Starting local video...");
                     webrtc.startLocalVideo();
                     $(".videoChatWrapper").slideDown();
                 } else {
@@ -176,6 +175,10 @@ Template.codeBox.onRendered(function() {
                 }
             });
         } 
+		else if (d.data === "startVideo" && Session.get("videoOngoing")) {
+			Streamy.broadcast(room, { data : "callReceived" });
+			Streamy.broadcast(room, { data : "callAccepted" });
+		}
 		//if call was received, and this user is part of the call, cancel timeout that auto-ends the call
 		else if(d.data === "callReceived" && Session.get("videoOngoing")) {
 			clearTimeout(Session.get("callTimeout"));
@@ -191,7 +194,7 @@ Template.codeBox.onRendered(function() {
 			stopSound(); //stop dial sound
 			stopDial();  //stop dial indicator
 		} else if(d.data === "callCancelled" && !Session.get("videoOngoing")) {
-			stopSound(); //stop dial sound
+			stopSound(); //stop ring sound
 			swal({title:"You Missed a Call", type: "error"});
 		}
     });
