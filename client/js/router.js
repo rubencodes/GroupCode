@@ -1,6 +1,6 @@
 Router.route("/", function () {
   Session.set("showVideoButtons", false);
-  this.render('landing');
+  this.render('master');
 }, {
   name: 'groupcode.landing'
 });

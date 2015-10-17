@@ -182,26 +182,25 @@ Template.codeBox.onRendered(function() {
 					Streamy.broadcast(room, { data : "callDeclined" });
                 }
             });
-        } 
-		else if (d.data === "startVideo" && Session.get("videoOngoing")) {
-			Streamy.broadcast(room, { data : "callReceived" });
-			Streamy.broadcast(room, { data : "callAccepted" });
-		}
+        }
 		//if call was received, and this user is part of the call, cancel timeout that auto-ends the call
 		else if(d.data === "callReceived" && Session.get("videoOngoing")) {
 			clearTimeout(Session.get("callTimeout"));
 			Session.set("callTimeout", null);
-		} else if(d.data === "callDeclined" && Session.get("videoOngoing")) {
+		} 
+		else if(d.data === "callDeclined" && Session.get("videoOngoing")) {
 			stopSound(); //stop dial sound
 			stopDial();  //stop dial indicator
 			
 			//end call and alert
 			endCall();
 			swal({title:"No One's Home", timer: 5000,text:"Looks like no one picked up! :(", type: "error"});
-		} else if(d.data === "callAccepted" && Session.get("videoOngoing")) {
+		} 
+		else if(d.data === "callAccepted" && Session.get("videoOngoing")) {
 			stopSound(); //stop dial sound
 			stopDial();  //stop dial indicator
-		} else if(d.data === "callCancelled" && !Session.get("videoOngoing")) {
+		} 
+		else if(d.data === "callCancelled" && !Session.get("videoOngoing")) {
 			stopSound(); //stop ring sound
 			swal({title:"You Missed a Call", type: "error"});
 		}
