@@ -13,7 +13,7 @@ Template.nav.onRendered(function() {
         autoRequestMedia: false,
         debug: false,
         detectSpeakingEvents: true,
-        autoAdjustMic: false
+        autoAdjustMic: true
     });
 
     // a peer video has been added
@@ -43,7 +43,7 @@ Template.nav.onRendered(function() {
     });
 
     webrtc.on('localStream', function() {
-        var room = Session.get("currentCodeId");
+        var room = Session.get("currentCodeBoxId");
         webrtc.joinRoom(room);
     });
 });
@@ -69,7 +69,7 @@ Template.nav.events({
     },
     'click #stopVideoCall': function() {
 		//id of current room
-    	var room = Session.get("currentCodeId");
+    	var room = Session.get("currentCodeBoxId");
 		
 		//announce cancelled call
 		Streamy.broadcast(room, { data : "callCancelled" });
@@ -96,17 +96,28 @@ Template.nav.events({
     },
     'click #share': function() {
         location.href = 'mailto:?subject=Join My GroupCode!&body=Hello,%0D%0A%0D%0ACome help me code on GroupCode, the free, real-time, collaborative code-editor! Follow the link below to join me.%0D%0A%0D%0A%0D%0A%0D%0AThanks!';
+    },
+	'click .create-groupcode': function() {
+        createGroupCode();
+    },
+    'click .upload-groupcode': function() {
+        //trigger file upload
+        document.getElementById("files").click();
+    },
+    'dragover .upload-groupcode': function(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+    },
+    'drop .upload-groupcode': function(evt) {
+        handleFileSelect(evt, createGroupCode);
+    },
+    'change #files': function(evt) {
+        handleFileSelect(evt, createGroupCode);
     }
 });
 
 Template.body.events({
     'keydown *': triggerDownload
-});
-
-Template.body.helpers({
-    'myTemp': function() {
-        return Session.get("template");
-    }
 });
 
 Template.error.events({
@@ -116,21 +127,18 @@ Template.error.events({
 });
 
 Template.landing.events({
-    'click #create,#create-2': function() {
+    'click .create-groupcode': function() {
         createGroupCode();
     },
-    'click #drop_zone': function() {
+    'click .upload-groupcode': function() {
         //trigger file upload
         document.getElementById("files").click();
     },
-    'dragover #drop_zone': function(evt) {
+    'dragover .upload-groupcode': function(evt) {
         evt.stopPropagation();
         evt.preventDefault();
-
-        $(this).find("h3").html("Drop Here");
-        //		evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     },
-    'drop #drop_zone': function(evt) {
+    'drop .upload-groupcode': function(evt) {
         handleFileSelect(evt, createGroupCode);
     },
     'change #files': function(evt) {
@@ -140,7 +148,7 @@ Template.landing.events({
 
 Template.codeBox.onRendered(function() {
 	//id of current room
-    var room = Session.get("currentCodeId");
+    var room = Session.get("currentCodeBoxId");
 	
 	//on Streamy message handler
     Streamy.on(room, function(d, s) {
@@ -210,13 +218,6 @@ Template.codeBox.onRendered(function() {
 });
 
 Template.codeBox.helpers({
-    // helper functions go here
-    'code': function() {
-        var codeBase = Code.findOne({
-            _id: Session.get("currentCodeId")
-        });
-        return codeBase ? codeBase.code : "";
-    },
     'docid': function() {
         return Session.get("currentCodeId");
     },
@@ -227,13 +228,14 @@ Template.codeBox.helpers({
             editor.setShowPrintMargin(false);
             editor.getSession().setUseWrapMode(true);
 
-            var codeBase = Code.findOne({
+            var code = Code.findOne({
                 _id: Session.get("currentCodeId")
             });
 
-            if (codeBase) {
-                $("select").val(codeBase.language).selectric("refresh");
-                ace.edit("codeBox").getSession().setMode('ace/mode/' + codeBase.language);
+            //if we have it stored, set the code language
+            if (code) {
+                $("select").val(code.language).selectric("refresh");
+                ace.edit("codeBox").getSession().setMode('ace/mode/' + code.language);
             }
         }
     },
@@ -382,10 +384,11 @@ function createGroupCode() {
 	if(Session.get("fileUploaded") == null) {
 		Session.set("fileUploaded", "/* Welcome to GroupCodes! Get started collaborating with others by sharing your current URL, or press the 'Share' button to share it via email. Anything you type here will be visible to anyone with the URL. */");
 	}
-    Meteor.call("createGroupCode", "javascript", function(err, codeId) {
+    Meteor.call("createGroupCode", "javascript", function(err, result) {
         if (!err) {
-            Session.set("currentCodeId", codeId);
-            Router.go("/" + codeId);
+            Session.set("currentCodeBoxId", result.codeBoxId);
+            Session.set("currentCodeId", result.codeId);
+            Router.go("/" + result.codeBoxId);
         }
     });
 }
@@ -420,7 +423,7 @@ function handleFileSelect(evt, callback) {
             if (ext.length > 0) {
                 ext = ext[0].substring(1);
 				
-				if(validExtension(ext) == false) {
+				if(!validExtension(ext)) {
 					swal({title:"File Upload Error", text:"Sorry, this type of file is not yet supported. We'll get right on that!", type: "error"});
 					return;
 				}
@@ -436,12 +439,9 @@ function handleFileSelect(evt, callback) {
     }
 }
 
-
 var invalidExtensions = ["xlsx", "xlsm", "doc", "docx", "pptx", "xltx", "xltm", "xlsb", "xlam", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm", "thmx", "dotm", "dotx", "docm", "jpg", "jpeg", "gif", "png", "zip", "tar", "gz", "mov", "mp3", "mp4", "flac", "iso", "dmg"];
 function validExtension(ext) {
-	if(invalidExtensions.indexOf(ext.toLowerCase()) >= 0)
-	   return false;
-	return true;
+	return invalidExtensions.indexOf(ext.toLowerCase()) === -1;
 }
 
 //handle end call
@@ -452,7 +452,7 @@ function endCall() {
 		Session.set("videoOngoing", false);
 		
 		//leave room
-		var room = Session.get("currentCodeId");
+		var room = Session.get("currentCodeBoxId");
 		webrtc.leaveRoom(room);
 		webrtc.stopLocalVideo();
 	});
@@ -461,7 +461,7 @@ function endCall() {
 //handle start video call
 function startCall() {
 	Session.set("videoOngoing", true);
-	var room = Session.get("currentCodeId");
+	var room = Session.get("currentCodeBoxId");
 
 	//start the call
 	webrtc.startLocalVideo();

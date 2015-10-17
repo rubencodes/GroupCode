@@ -21,29 +21,8 @@
 			</div><br><br>
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
-					<button id="create" class="btn btn-success btn-block"><h3>Start a New GroupCode</h3></button>
-				</div>
-			</div><br>
-			<div class="row">
-				<div class="col-md-6 col-md-offset-3">
-					<div id="drop_zone" class="file-upload-box btn-success">
-						<h3 class="help-text">Start with File<br><small>(Drag & Drop or Click to Upload)</small></h3>
-						<input type="file" id="files" name="files[]" />
-					</div>
-				</div>
-			</div><br><br>
-		</div>
-	</section>
-	<section class="section-bg">
-		<div class="container">
-			<br><br>
-			<div class="row">
-				<h1>What's a GroupCode?</h1>
-			</div><br><br>
-			<div class="row">
-				<div class="col-md-6 col-md-offset-3">
 					<div class="card">
-						<img src="placeit.jpg" class="mini-img">
+<!--						<img src="placeit.jpg" class="mini-img">-->
 						<h2>&lt;code&gt;</h2>
 						<p>GroupCodes are free, collaborative code editing rooms designed to improve communication between team members during development. We use the open-source Ace code editor used by big-shots like Cloud9 to provide a first-class coding experience.</p>
 					</div>
@@ -56,12 +35,17 @@
 				</div>
 				<div class="col-md-6 col-md-offset-3">
 					<div class="card">
-						<h2>&lt;real-time&gt;</h2>
-						<p>GroupCodes are all about real-time communication, and that goes for code too. If you've seen Google Docs in action, you will feal right at home in a GroupCode. Use them for anything from coding with a partner to conducting a coding interview. They're free!</p>
-						<button id="create-2" class="btn btn-success btn-block">Start a New GroupCode</button>
+						<h2>&lt;live&gt;</h2>
+						<p>GroupCodes are all about live, real-time communication, and that goes for code too. If you've seen Google Docs in action, you will feal right at home in a GroupCode. Use them for anything from coding with a partner to conducting a coding interview. <b>They're free!</b></p>
+						<div class="btn-group" style="width: 100%">
+							<button class="btn btn-success create-groupcode">Start a GroupCode</button>
+							<div class="btn btn-success upload-groupcode">
+								Start with File
+							</div>
+						</div>
 					</div>
 				</div>
-			</div><br><br><br>
+			</div>
 		</div>
 	</section>
 	<section class="section-bg" style="background:rgb(51, 51, 51)">
@@ -142,6 +126,20 @@
 				  <li><button id="startVideoCall" class="btn btn-danger navbar-btn" title="Join Video Call"><span class="glyphicon glyphicon-facetime-video"></span></button></li>
 			  {{/if}}
 		  </ul>
+		{{else}}
+		  <ul class="nav navbar-nav navbar-right hidden-xs">
+			  <li>
+				  <button class="btn btn-primary navbar-btn create-groupcode" title="Start a GroupCode">
+					  <span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;&nbsp;Start a GroupCode
+				  </button>
+			  </li>
+			  <li>
+				  <div class="btn btn-primary navbar-btn upload-groupcode" title="Start a GroupCode with File">
+					<span class="glyphicon glyphicon-open"></span>&nbsp;&nbsp;&nbsp;Start with File
+					<input type="file" id="files" name="files[]" />
+				  </div>
+			  </li>
+		  </ul>
 		{{/if}}
 	  </div><!-- /.container-fluid -->
 	</nav>
@@ -152,6 +150,7 @@
 		<div class="large progress"></div>
 	</div>
 </template>
+
 <template name="codeBox">
     {{> videoChat}}
 	{{#if Template.subscriptionsReady}}
@@ -174,7 +173,6 @@
 		</button>
 	</div>
 </template>
-
 
 <template name="error">
 	<section class="section-img" style="height:100vh">
