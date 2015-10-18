@@ -24,7 +24,7 @@ Meteor.methods({
 		check(codeBoxId,String);
         var codeId = Code.insert({ language: language });
         CodeBox.update({ _id : codeBoxId }, { $push: { codeIds: codeId } });
-		
+
 		return {
           codeBoxId: codeBoxId,
           codeId: codeId

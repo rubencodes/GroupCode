@@ -407,6 +407,16 @@ ul.tabs-list {
     transition: background 0.2s;
 }
 
+.basicTabs-container .tabs-list .tab-item.active, .dynamicTabs-container .tabs-list .tab-item.active,
+.basicTabs-container .tabs-list .tab-item.active:hover, .dynamicTabs-container .tabs-list .tab-item.active:hover {
+    border-radius: 5px 5px 0 0;
+	border: none;
+    margin-bottom: -1px !important;
+    padding: 15px 14px 14px 14px !important;
+    background-color: rgb(30, 181, 151);
+    color: white;
+}
+
 li.tab-item.active {
     padding: 0 20px !important;
 }

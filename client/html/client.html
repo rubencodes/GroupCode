@@ -152,13 +152,13 @@
 </template>
 
 <template name="master">
-  {{#basicTabs name="flexContainer" tabs=tabs}}
+  {{#dynamicTabs name="flexContainer" tabs=tabs activeTab=activeTab}}
     
-	{{#tabContent slug="codeBox" name="flexContainer"}}
+	{{#tabContent slug=currentCodeId name="flexContainer"}}
       	{{> codeBox}}
     {{/tabContent}}
 
-  {{/basicTabs}}
+  {{/dynamicTabs}}
 </template>
 
 <template name="codeBox">
