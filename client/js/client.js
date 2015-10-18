@@ -462,36 +462,50 @@ function triggerDownload(event) {
 
 //download prompt
 function download(text) {
-    swal({
-        title: "Save File",
-        text: "Enter a filename:",
-        type: "input",
-        showCancelButton: true,
-        closeOnConfirm: false,
-        animation: "slide-from-top",
-        inputValue: "filename." + $('option:selected', $("select")).attr("ext"),
-        confirmButtonColor: "rgb(24, 188, 156)",
-        confirmButtonText: "Save",
-    }, function(filename) {
-        if (filename === false)
-            return false;
-        else if (filename === "") {
-            swal.showInputError("Please enter a filename.");
-            return false;
-        } else {
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', filename);
+	var code = Code.findOne({ _id: Session.get("currentCodeId") });
+	if(code.filename == null) {
+		swal({
+			title: "Save File",
+			text: "Enter a filename:",
+			type: "input",
+			showCancelButton: true,
+			closeOnConfirm: false,
+			animation: "slide-from-top",
+			inputValue: "filename." + $('option:selected', $("select")).attr("ext"),
+			confirmButtonColor: "rgb(24, 188, 156)",
+			confirmButtonText: "Save",
+		}, function(filename) {
+			if (filename === false)
+				return false;
+			else if (filename === "") {
+				swal.showInputError("Please enter a filename.");
+				return false;
+			} else {
+				var element = document.createElement('a');
+				element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+				element.setAttribute('download', filename);
 
-            element.style.display = 'none';
-            document.body.appendChild(element);
+				element.style.display = 'none';
+				document.body.appendChild(element);
 
-            element.click();
+				element.click();
 
-            document.body.removeChild(element);
-            swal.close();
-        }
-    });
+				document.body.removeChild(element);
+				swal.close();
+			}
+		});
+	} else {
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+		element.setAttribute('download', code.filename);
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
+	}
 }
 
 //create groupcode on the server
