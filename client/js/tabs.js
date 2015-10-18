@@ -26,7 +26,6 @@ Template.master.helpers({
 				name: 'tab-'+i,
 				slug: codeBox.codeIds[i],
 				onRender: function(slug, template) {
-					console.log("is this thing on?")
 					//set active code id
 					Session.set("currentCodeId", slug);
 				}

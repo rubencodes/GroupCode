@@ -415,6 +415,8 @@ ul.tabs-list {
     padding: 15px 14px 14px 14px !important;
     background-color: rgb(30, 181, 151);
     color: white;
+	font-weight: bold;
+	font-size: 16px !important;
 }
 
 li.tab-item.active {
@@ -438,4 +440,34 @@ li.tab-item.tab-item-small {
 .navbar-fixed-top:hover {
 	top: 0;
 	transition: top 0.5s;
+}
+nav.navbar.navbar-inverse.navbar-fixed-top>* {
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+nav.navbar.navbar-inverse.navbar-fixed-top:hover>* {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+/*** ACE OVERRIDES ***/
+input.ace_search_field {
+    color: rgb(0, 0, 0);
+}
+.ace-twilight .ace_marker-layer .ace_selection {
+    background: rgb(30, 181, 151, 0.5) !important;
+}
+
+.ace-twilight .ace_comment {
+    color: rgb(30, 181, 151) !important;
+}
+.ace-twilight .ace_string {
+    color: rgb(185, 255, 0) !important;
+}
+.ace-twilight .ace_keyword, .ace-twilight .ace_meta, .ace-twilight .ace_list, .ace-twilight .ace_markup.ace_list, .ace-twilight .ace_storage {
+    color: rgb(0, 193, 255) !important;
+}
+.ace-twilight .ace_entity.ace_name.ace_function, .ace-twilight .ace_meta.ace_tag, .ace-twilight .ace_variable {
+    color: rgb(255, 255, 255) !important;
 }
