@@ -38,7 +38,12 @@ Meteor.methods({
 		check(filename,String);
 		check(language,String);
 		check(id,String);
-		Code.update({ _id: id }, { $set : { filename: filename, language: language } });
+		
+		if(language) {
+			Code.update({ _id: id }, { $set : { filename: filename, language: language } });
+		} else {
+			Code.update({ _id: id }, { $set : { filename: filename } });
+		}
 	}
 });
 

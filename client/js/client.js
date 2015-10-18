@@ -320,9 +320,11 @@ ReactiveTabs.createInterface({
 				var code = Code.findOne({ _id: result.codeId });
 				showFileNameInputDialog(function(filename, language, finish) {
 					Meteor.call("updateCodeName", result.codeId, filename, language, function() {
-						//update editor language
-						$("select").val(language).selectric("refresh");
-						ace.edit("codeBox").getSession().setMode('ace/mode/' + language);
+						if(language) {
+							//update editor language
+							$("select").val(language).selectric("refresh");
+							ace.edit("codeBox").getSession().setMode('ace/mode/' + language);
+						}
 						finish();
 					});
 				});
@@ -333,6 +335,19 @@ ReactiveTabs.createInterface({
 		var code = Code.findOne({ _id: slug });
 		$("select").val(code.language).selectric("refresh");
 		ace.edit("codeBox").getSession().setMode('ace/mode/' + code.language);
+		
+		if(!code.filename) {
+			showFileNameInputDialog(function(filename, language, finish) {
+				Meteor.call("updateCodeName", slug, filename, language, function() {
+					if(language) {
+						//update editor language
+						$("select").val(language).selectric("refresh");
+						ace.edit("codeBox").getSession().setMode('ace/mode/' + language);
+					}
+					finish();
+				});
+			});
+		}
 	}
   }
 });
@@ -402,7 +417,7 @@ function showFileNameInputDialog(success) {
 
 			//if this is a valid extension, update the name and language on the server
 			if(validExtension(ext)) {
-				var language = getLanguageForExtension(ext);
+				var language = getLanguageForExtension(ext) || "";
 				
 				success(filename, language, swal.close);
 			} else {
@@ -415,6 +430,24 @@ function showFileNameInputDialog(success) {
 			}
 		}
 	});
+}
+
+//language stuff
+var invalidExtensions = ["xlsx", "xlsm", "doc", "docx", "pptx", "xltx", "xltm", "xlsb", "xlam", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm", "thmx", "dotm", "dotx", "docm", "jpg", "jpeg", "gif", "png", "zip", "tar", "gz", "mov", "mp3", "mp4", "flac", "iso", "dmg"];
+function validExtension(ext) {
+	return invalidExtensions.indexOf(ext.toLowerCase()) === -1;
+}
+function extractFileExtension(filename) {
+	var ext = filename.match(/\.([0-9a-z]+)(?:[\?#]|$)/);
+	if (ext && ext.length > 0) {
+		ext = ext[0].substring(1);
+
+		return ext;
+	} 
+	return "";
+}
+function getLanguageForExtension(ext) {
+	return $("option[ext='" + ext + "']").attr("value");
 }
 
 //animates name
@@ -463,6 +496,20 @@ function triggerDownload(event) {
 //download prompt
 function download(text) {
 	var code = Code.findOne({ _id: Session.get("currentCodeId") });
+	
+	var downloadWithFileName = function(filename, file) {
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(file));
+		element.setAttribute('download', filename);
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
+	}
+	
 	if(code.filename == null) {
 		swal({
 			title: "Save File",
@@ -481,30 +528,12 @@ function download(text) {
 				swal.showInputError("Please enter a filename.");
 				return false;
 			} else {
-				var element = document.createElement('a');
-				element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-				element.setAttribute('download', filename);
-
-				element.style.display = 'none';
-				document.body.appendChild(element);
-
-				element.click();
-
-				document.body.removeChild(element);
+				downloadWithFileName(filename, text);
 				swal.close();
 			}
 		});
 	} else {
-		var element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-		element.setAttribute('download', code.filename);
-
-		element.style.display = 'none';
-		document.body.appendChild(element);
-
-		element.click();
-
-		document.body.removeChild(element);
+		downloadWithFileName(code.filename, text);
 	}
 }
 
@@ -562,24 +591,6 @@ function handleFileSelect(evt, callback) {
 			swal({title:"File Upload Error", text:"Sorry, this type of file is not yet supported. We'll get right on that!", type: "error"});
 		}
     }
-}
-
-//language stuff
-var invalidExtensions = ["xlsx", "xlsm", "doc", "docx", "pptx", "xltx", "xltm", "xlsb", "xlam", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm", "thmx", "dotm", "dotx", "docm", "jpg", "jpeg", "gif", "png", "zip", "tar", "gz", "mov", "mp3", "mp4", "flac", "iso", "dmg"];
-function validExtension(ext) {
-	return invalidExtensions.indexOf(ext.toLowerCase()) === -1;
-}
-function extractFileExtension(filename) {
-	var ext = filename.match(/\.([0-9a-z]+)(?:[\?#]|$)/);
-	if (ext && ext.length > 0) {
-		ext = ext[0].substring(1);
-
-		return ext;
-	} 
-	return "";
-}
-function getLanguageForExtension(ext) {
-	return $("option[ext='" + ext + "']").attr("value");
 }
 
 //handle end call
