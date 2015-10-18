@@ -6,7 +6,6 @@
 
 twbs:bootstrap
 fds:webrtc
-mizzao:sharejs-ace
 grokbot:bootstrap-flatly
 iron:router
 kevohagan:sweetalert
@@ -27,3 +26,4 @@ random
 ejson
 spacebars
 check
+mizzao:sharejs-ace@=1.1.9

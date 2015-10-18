@@ -19,11 +19,11 @@ Meteor.methods({
           codeId: codeId
         }
 	},
-	"addToGroupCode" : function(language, codeBoxId) {
+	"addToGroupCode" : function(codeBoxId, language) {
 		check(language,String);
 		check(codeBoxId,String);
         var codeId = Code.insert({ language: language });
-        var codeBoxId = CodeBox.update({ $push: { codeIds: codeId } });
+        CodeBox.update({ _id : codeBoxId }, { $push: { codeIds: codeId } });
 		
 		return {
           codeBoxId: codeBoxId,
