@@ -1,7 +1,6 @@
 // on the server
-Meteor.publish('code', function(id) {
-	check(id,String);
- 	return Code.find({ _id : id });
+Meteor.publish('code', function() {
+ 	return Code.find();
 });
 
 Meteor.publish('codeBox', function(id) {
@@ -35,5 +34,11 @@ Meteor.methods({
 		check(id,String);
 		Code.update({ _id: id }, { $set : { language: language } });
 	},
+	"updateCodeName" : function(id, filename, language) {
+		check(filename,String);
+		check(language,String);
+		check(id,String);
+		Code.update({ _id: id }, { $set : { filename: filename, language: language } });
+	}
 });
 

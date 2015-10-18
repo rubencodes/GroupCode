@@ -1,6 +1,8 @@
 Session.setDefault("showVideoButtons", false);
 Session.setDefault("videoOngoing", false);
 Session.setDefault("videoShown", true);
+Meteor.subscribe("code");
+Meteor.subscribe("codeBox");
 
 Template.nav.onRendered(function() {
     Session.set("videoOngoing", false);
@@ -245,9 +247,9 @@ Template.codeBox.helpers({
                 editor.setValue(Session.get("fileUploaded"));
 
                 if (ext = Session.get("fileExtension")) {
-                    if (option = $("option[ext='" + ext + "']").attr("value")) {
-                        $("select").val(option).selectric("refresh");
-                        ace.edit("codeBox").getSession().setMode('ace/mode/' + option);
+                    if (language = getLanguageForExtension(ext)) {
+                        $("select").val(language).selectric("refresh");
+                        ace.edit("codeBox").getSession().setMode('ace/mode/' + language);
                         Meteor.call("updateGroupCodeLanguage", Session.get("currentCodeId"), $("select").val());
                     }
                     Session.set("fileExtension", null);
@@ -301,6 +303,119 @@ Template.videoChat.events({
         }
     },
 });
+
+ReactiveTabs.createInterface({
+  template: 'dynamicTabs',
+  onChange: function (slug, template) {
+    // This callback runs every time a tab changes.
+    // The `template` instance is unique per {{#basicTabs}} block.
+
+	if(slug === "newTab") {
+		Meteor.call("addToGroupCode", Session.get("currentCodeBoxId"), $("select").val(), function(err, result) {
+			if(!err) {
+				Session.set('activeTab', result.codeId);
+				Session.set("currentCodeId", result.codeId);
+				
+				//set name of file
+				var code = Code.findOne({ _id: result.codeId });
+				showFileNameInputDialog(function(filename, language, finish) {
+					Meteor.call("updateCodeName", result.codeId, filename, language, function() {
+						//update editor language
+						$("select").val(language).selectric("refresh");
+						ace.edit("codeBox").getSession().setMode('ace/mode/' + language);
+						finish();
+					});
+				});
+			}
+		});
+	} else {
+		//update editor language to this language
+		var code = Code.findOne({ _id: slug });
+		$("select").val(code.language).selectric("refresh");
+		ace.edit("codeBox").getSession().setMode('ace/mode/' + code.language);
+	}
+  }
+});
+
+Template.master.helpers({
+  	tabs: function () {
+		var codeBox = CodeBox.findOne({ _id: Session.get("currentCodeBoxId") });
+
+		var tabs = [];
+		//loop through ids to create tabs
+		for(var i = 0; i < codeBox.codeIds.length; i++) {
+			var code = Code.findOne({ _id: codeBox.codeIds[i] });
+			
+			tabs.push({
+				name: code.filename || "tab-"+i,
+				slug: codeBox.codeIds[i],
+				onRender: function(slug, template) {
+					//set active code id
+					Session.set("currentCodeId", slug);
+				}
+			});
+		}
+		
+		tabs.push({
+			name: '+',
+			slug: 'newTab'
+		});
+
+		// Every tab object MUST have a name, slug, and onRender!
+		return tabs;
+	},
+	activeTab: function () {
+		// Use this optional helper to reactively set the active tab.
+		// All you have to do is return the slug of the tab.
+
+		// You can set this using an Iron Router param if you want--
+		// or a Session variable, or any reactive value from anywhere.
+
+		// If you don't provide an active tab, the first one is selected by default.
+		// See the `advanced use` section below to learn about dynamic tabs.
+		return Session.get('activeTab'); // Returns "people", "places", or "things".
+	},
+	currentCodeId: function() {
+		return Session.get("currentCodeId");
+	}
+});
+
+//enter a filename
+function showFileNameInputDialog(success) {
+	swal({
+		title: "New File",
+		text: "Enter a filename:",
+		type: "input",
+		showCancelButton: true,
+		closeOnConfirm: false,
+		animation: "slide-from-top",
+		inputValue: "filename.ext",
+		confirmButtonColor: "rgb(24, 188, 156)",
+		confirmButtonText: "Save",
+	}, function(filename) {
+		if (filename === false || filename === "") {
+			swal.showInputError("Please enter a filename.");
+			return false;
+		} else {
+			//get file extension
+			var ext = extractFileExtension(filename);
+
+			//if this is a valid extension, update the name and language on the server
+			if(validExtension(ext)) {
+				var language = getLanguageForExtension(ext);
+				
+				success(filename, language, swal.close);
+			} else {
+				swal({
+					title:"File Upload Error", 
+					text:"Sorry, this file type is not yet supported. We'll get right on that!", 
+					type: "error"
+				}, showFileNameInputDialog);
+				return false;
+			}
+		}
+	});
+}
 
 //animates name
 function nameAnimation() {
@@ -419,17 +534,13 @@ function handleFileSelect(evt, callback) {
             Session.set("fileUploaded", evt.target.result);
 
             //get file extension
-            var ext = file.name.match(/\.([0-9a-z]+)(?:[\?#]|$)/);
-            if (ext.length > 0) {
-                ext = ext[0].substring(1);
-				
-				if(!validExtension(ext)) {
-					swal({title:"File Upload Error", text:"Sorry, this type of file is not yet supported. We'll get right on that!", type: "error"});
-					return;
-				}
-				
-                Session.set("fileExtension", ext);
-            }
+			var ext = extractFileExtension(file.name);
+			if(ext && validExtension(ext)) {
+				Session.set("fileExtension", ext);
+			} else {
+				swal({title:"File Upload Error", text:"Sorry, this type of file is not yet supported. We'll get right on that!", type: "error"});
+				return;
+			}
 			
 			if(callback) callback();
         }
@@ -439,9 +550,22 @@ function handleFileSelect(evt, callback) {
     }
 }
 
+//language stuff
 var invalidExtensions = ["xlsx", "xlsm", "doc", "docx", "pptx", "xltx", "xltm", "xlsb", "xlam", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm", "thmx", "dotm", "dotx", "docm", "jpg", "jpeg", "gif", "png", "zip", "tar", "gz", "mov", "mp3", "mp4", "flac", "iso", "dmg"];
 function validExtension(ext) {
 	return invalidExtensions.indexOf(ext.toLowerCase()) === -1;
+}
+function extractFileExtension(filename) {
+	var ext = filename.match(/\.([0-9a-z]+)(?:[\?#]|$)/);
+	if (ext && ext.length > 0) {
+		ext = ext[0].substring(1);
+
+		return ext;
+	} 
+	return "";
+}
+function getLanguageForExtension(ext) {
+	return $("option[ext='" + ext + "']").attr("value");
 }
 
 //handle end call
