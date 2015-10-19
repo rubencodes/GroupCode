@@ -9,9 +9,10 @@ Meteor.publish('codeBox', function(id) {
 });
 
 Meteor.methods({
-	"createGroupCode" : function(language) {
+	"createGroupCode" : function(filename, language) {
+		check(filename,String);
 		check(language,String);
-        var codeId = Code.insert({ language: language });
+        var codeId = Code.insert({ filename: filename, language: language });
         var codeBoxId = CodeBox.insert({ codeIds: [codeId] });
 		return {
           codeBoxId: codeBoxId,

@@ -245,16 +245,6 @@ Template.codeBox.helpers({
         return function(editor) {
             if (Session.get("fileUploaded")) {
                 editor.setValue(Session.get("fileUploaded"));
-
-                if (ext = Session.get("fileExtension")) {
-                    if (language = getLanguageForExtension(ext)) {
-                        $("select").val(language).selectric("refresh");
-                        ace.edit("codeBox").getSession().setMode('ace/mode/' + language);
-                        Meteor.call("updateGroupCodeLanguage", Session.get("currentCodeId"), $("select").val());
-                    }
-                    Session.set("fileExtension", null);
-                }
-
                 Session.set("fileUploaded", null);
             }
         }
@@ -434,6 +424,49 @@ function showFileNameInputDialog(success) {
 
 //language stuff
 var invalidExtensions = ["xlsx", "xlsm", "doc", "docx", "pptx", "xltx", "xltm", "xlsb", "xlam", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm", "thmx", "dotm", "dotx", "docm", "jpg", "jpeg", "gif", "png", "zip", "tar", "gz", "mov", "mp3", "mp4", "flac", "iso", "dmg"];
+var knownExtensions = {
+	"as": 		"actionscript",
+	"bat": 		"batchfile",
+	"c": 		"c_cpp",
+	"cpp": 	 	"c_cpp",
+	"cs":		"csharp",
+	"coffee":	"coffee",
+	"css":		"css",
+	"cbl":		"cobol",
+	"d":		"d",
+	"dart":	 	"dart",
+	"py":		"django",
+	"erl":		"erlang",
+	"h": 		"c_cpp",
+	"haml":		"haml",
+	"hs":		"haskell",
+	"html":		"html",
+	"erb":		"html",
+	"java":		"java",
+	"json":		"json",
+	"js":		"javascript",
+	"md":		"markdown",
+	"sql":		"mysql",
+	"tex":		"latex",
+	"mat":		"matlab",
+	"m":		"objectivec",
+	"pas":		"pascal",
+	"pl":		"perl",
+	"php":		"php",
+	"pl":		"prolog",
+	"py":		"python",
+	"r":		"r",
+	"rb":		"ruby",
+	"scss":		"sass",
+	"scala":	"scala",
+	"scm":		"scheme",
+	"sh":		"sh",
+	"sql":		"sql",
+	"svg":		"svg",
+	"txt":		"text",
+	"vbs":		"vbscript",
+	"yaml":		"yaml"
+};
 function validExtension(ext) {
 	return invalidExtensions.indexOf(ext.toLowerCase()) === -1;
 }
@@ -447,7 +480,12 @@ function extractFileExtension(filename) {
 	return "";
 }
 function getLanguageForExtension(ext) {
-	return $("option[ext='" + ext + "']").attr("value");
+	return knownExtensions[ext] || "";
+}
+function getExtensionForLanguage(language) {
+	for(ext in knownExtensions) {
+		if(knownExtensions[ext] == language) return ext;
+	}
 }
 
 //animates name
@@ -488,7 +526,15 @@ function triggerDownload(event) {
     if (Router.current().route.getName() == "groupcode.codebox") {
         if (event.keyCode == 83 && (navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey)) {
             event.preventDefault();
-            download(ace.edit("codeBox").getValue());
+			if(!Session.get("saveInProgress")) {
+				download(ace.edit("codeBox").getValue());
+
+				var TO = setTimeout(function() {
+					Session.set("saveInProgress", null);
+					clearTimeout(TO);
+				}, 1000);
+				Session.set("saveInProgress", TO);
+			}
         }
     }
 }
@@ -518,7 +564,7 @@ function download(text) {
 			showCancelButton: true,
 			closeOnConfirm: false,
 			animation: "slide-from-top",
-			inputValue: "filename." + $('option:selected', $("select")).attr("ext"),
+			inputValue: "filename." + getExtensionForLanguage(code.language),
 			confirmButtonColor: "rgb(24, 188, 156)",
 			confirmButtonText: "Save",
 		}, function(filename) {
@@ -538,15 +584,16 @@ function download(text) {
 }
 
 //create groupcode on the server
-function createGroupCode() {
+function createGroupCode(upload) {
 	if(Session.get("fileUploaded") == null) {
 		Session.set("fileUploaded", "/* Welcome to GroupCodes! Get started collaborating with others by sharing your current URL, or press the 'Share' button to share it via email. Anything you type here will be visible to anyone with the URL. */");
 	}
-    Meteor.call("createGroupCode", "javascript", function(err, result) {
+
+	Meteor.call("createGroupCode", upload.filename || "newfile.js", upload.language || "javascript", function(err, result) {
         if (!err) {
             Session.set("currentCodeBoxId", result.codeBoxId);
             Session.set("currentCodeId", result.codeId);
-            Router.go("/" + result.codeBoxId);
+			Router.go("/" + result.codeBoxId);
         }
     });
 }
@@ -563,6 +610,9 @@ function handleFileSelect(evt, callback) {
 
     //we only support one file at a time
 	if(files.length > 1) {
+		for(var i = 0; i < files.length; i++) {
+			console.log(files[i].name)
+		}
 		swal({title:"No Multifile Support", text:"Sorry, GroupCodes don't yet support multiple files; files must be uploaded individually.", type: "error"});
 		return;
 	}
@@ -579,13 +629,13 @@ function handleFileSelect(evt, callback) {
             //get file extension
 			var ext = extractFileExtension(file.name);
 			if(ext && validExtension(ext)) {
-				Session.set("fileExtension", ext);
-			} else {
+				var language = getLanguageForExtension(ext);
+				if(callback) callback({ filename: file.name, language : language });
+			} 
+			else {
 				swal({title:"File Upload Error", text:"Sorry, this type of file is not yet supported. We'll get right on that!", type: "error"});
 				return;
 			}
-			
-			if(callback) callback();
         }
 		reader.onerror = function(evt) {
 			swal({title:"File Upload Error", text:"Sorry, this type of file is not yet supported. We'll get right on that!", type: "error"});
