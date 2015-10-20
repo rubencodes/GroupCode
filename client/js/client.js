@@ -589,7 +589,7 @@ function createGroupCode(upload) {
 		Session.set("fileUploaded", "/* Welcome to GroupCodes! Get started collaborating with others by sharing your current URL, or press the 'Share' button to share it via email. Anything you type here will be visible to anyone with the URL. */");
 	}
 
-	Meteor.call("createGroupCode", upload.filename || "newfile.js", upload.language || "javascript", function(err, result) {
+	Meteor.call("createGroupCode", upload ? upload.filename : "newfile.js", upload ? upload.language : "javascript", function(err, result) {
         if (!err) {
             Session.set("currentCodeBoxId", result.codeBoxId);
             Session.set("currentCodeId", result.codeId);

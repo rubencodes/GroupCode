@@ -366,15 +366,14 @@ p.footer {
 /***********************************************************************/
 ul.tabs-list {
     padding: 5px 5px 0  5px;
-    margin: 0;
+    margin: 10px 0 -5px 0;
     background: rgba(0,0,0,0.5);
     color: white;
     box-shadow: 5px 0 5px black;
-    height: 60px;
     overflow-y: hidden;
     overflow-x: auto;
 	
-	flex: 0 1 60px;
+	flex: 0 1 auto;
 	flex-direction: row;
 }
 
@@ -391,14 +390,13 @@ ul.tabs-list {
     border-radius: 5px 5px 0 0;
 	border: 0;
     height: 40px;
-	margin: 15px 2px 0 2px;
+	margin: 5px 2px 0 2px;
 }
 .basicTabs-container ul.tabs-list li.tab-item:last-of-type, .dynamicTabs-container ul.tabs-list li.tab-item:last-of-type {
 	min-width: 20px !important;
-    width: 35px;
+    width: 40px;
     text-align: center;
     font-weight: bold !important;
-    padding: 5px 5px 0 5px;
 }
 
 .basicTabs-container ul.tabs-list li.tab-item:hover, .dynamicTabs-container ul.tabs-list li.tab-item:hover {
@@ -411,19 +409,18 @@ ul.tabs-list {
 .basicTabs-container .tabs-list .tab-item.active:hover, .dynamicTabs-container .tabs-list .tab-item.active:hover {
     border-radius: 5px 5px 0 0;
 	border: none;
-    margin-bottom: -1px !important;
-    padding: 15px 14px 14px 14px !important;
+    margin-bottom: 0 !important;
     background-color: rgb(30, 181, 151);
     color: white;
 	font-weight: bold;
 	font-size: 16px !important;
 }
 
-li.tab-item.active {
-    padding: 0 20px !important;
-}
-li.tab-item.tab-item-small {
-	min-width: 50px;
+li.tab-item {
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
 }
 
 .tabs-content-container, .tabs-content, .flexContainer {
