@@ -397,6 +397,9 @@ ul.tabs-list {
     width: 40px;
     text-align: center;
     font-weight: bold !important;
+	margin-bottom: -5px;
+    padding-top: 10px;
+	border-radius: 0 5px 0 0;
 }
 
 .basicTabs-container ul.tabs-list li.tab-item:hover, .dynamicTabs-container ul.tabs-list li.tab-item:hover {

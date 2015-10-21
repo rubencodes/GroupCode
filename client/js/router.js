@@ -5,6 +5,13 @@ Router.route("/", function () {
   name: 'groupcode.landing'
 });
 
+Router.route("/FAQ", function () {
+  Session.set("showVideoButtons", false);
+  this.render('faq');
+}, {
+  name: 'groupcode.faq'
+});
+
 Router.route("/:_id", {
   // rendered until the subscriptions are ready
   loadingTemplate: 'loading',

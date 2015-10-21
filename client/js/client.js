@@ -229,6 +229,7 @@ Template.codeBox.helpers({
             editor.setShowPrintMargin(false);
             editor.getSession().setUseWrapMode(true);
 			editor.$blockScrolling = Infinity;
+			editor.focus();
 
             var code = Code.findOne({
                 _id: Session.get("currentCodeId")
