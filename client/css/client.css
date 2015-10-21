@@ -317,6 +317,22 @@ p.footer {
 	animation-delay: 0.2s;
 }
 
+.col-md-6.col-md-offset-3:nth-of-type(4)>.card {
+	animation-delay: 0.3s;
+}
+
+.col-md-6.col-md-offset-3:nth-of-type(5)>.card {
+	animation-delay: 0.4s;
+}
+
+.col-md-6.col-md-offset-3:nth-of-type(6)>.card {
+	animation-delay: 0.5s;
+}
+
+.col-md-6.col-md-offset-3:nth-of-type(7)>.card {
+	animation-delay: 0.6s;
+}
+
 /* Card Images */
 .card>.mini-img {
 	box-shadow: none;
