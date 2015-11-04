@@ -91,6 +91,26 @@ Template.nav.events({
     'click #download': function() {
         download(ace.edit("codeBox").getValue());
     },
+    'click #trash': function() {
+        swal({   
+          title: "Are you sure?",   
+          text: "You will not be able to recover this file!",   
+          type: "warning",   
+          showCancelButton: true,   
+          confirmButtonColor: "#DD6B55",   
+          confirmButtonText: "Yes, delete it!",   
+          closeOnConfirm: false,
+        }, function() {  
+          Meteor.call("deleteFileFromGroupCode", Session.get("currentCodeId"), Session.get("currentCodeBoxId"), function() {
+            swal({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              type: "success",
+              timer: 1000
+            })
+          });
+        });
+    },
     'click .navbar-brand': function() {
         Session.set("videoOngoing", false);
         Session.set("videoShown", true);
@@ -151,7 +171,7 @@ Template.landing.events({
 Template.codeBox.onRendered(function() {
 	//id of current room
     var room = Session.get("currentCodeBoxId");
-	
+  
 	//on Streamy message handler
     Streamy.on(room, function(d, s) {
 		//if we get a call and this user didn't start the video, alert them
@@ -207,7 +227,7 @@ Template.codeBox.onRendered(function() {
 			swal({title:"You Missed a Call", type: "error"});
 		}
     });
-
+  
 	//when the selected element changes, change the editor mode and store in db
     $('select').selectric().on('selectric-change', function(element) {
         var mode = $(this).val();
@@ -324,21 +344,23 @@ ReactiveTabs.createInterface({
 	} else {
 		//update editor language to this language
 		var code = Code.findOne({ _id: slug });
-		$("select").val(code.language).selectric("refresh");
-		ace.edit("codeBox").getSession().setMode('ace/mode/' + code.language);
-		
-		if(!code.filename) {
-			showFileNameInputDialog(function(filename, language, finish) {
-				Meteor.call("updateCodeName", slug, filename, language, function() {
-					if(language) {
-						//update editor language
-						$("select").val(language).selectric("refresh");
-						ace.edit("codeBox").getSession().setMode('ace/mode/' + language);
-					}
-					finish();
-				});
-			});
-		}
+      
+        if(code) {
+          $("select").val(code.language).selectric("refresh");
+          ace.edit("codeBox").getSession().setMode('ace/mode/' + code.language);
+          if(!code.filename) {
+              showFileNameInputDialog(function(filename, language, finish) {
+                  Meteor.call("updateCodeName", slug, filename, language, function() {
+                      if(language) {
+                          //update editor language
+                          $("select").val(language).selectric("refresh");
+                          ace.edit("codeBox").getSession().setMode('ace/mode/' + language);
+                      }
+                      finish();
+                  });
+              });
+          }
+        }
 	}
   }
 });

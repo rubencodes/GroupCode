@@ -19,6 +19,12 @@ Meteor.methods({
           codeId: codeId
         }
 	},
+    "deleteFileFromGroupCode" : function(codeId, codeBoxId) {
+		check(codeId,String);
+		check(codeBoxId,String);
+        Code.remove({ _id: codeId });
+        CodeBox.update({ _id: codeBoxId }, { $pull: { codeIds: codeId } });
+	},
 	"addToGroupCode" : function(codeBoxId, language) {
 		check(language,String);
 		check(codeBoxId,String);
