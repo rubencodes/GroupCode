@@ -1,4 +1,4 @@
 .modulus-deploy/
 .demeteorized/
-
+node_modules/
 settings.json
